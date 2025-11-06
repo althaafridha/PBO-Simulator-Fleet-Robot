@@ -16,8 +16,7 @@ protected:
     double battery;
 
 public:
-    Vehicle(string i, double x, double y, 
-        double z, double b) {
+    Vehicle(string i, double x, double y, double z, double b) {
         id = i;
         pos.x = x;
         pos.y = y;
@@ -29,9 +28,9 @@ public:
 
     virtual void status() {
         cout << "[" << id << "] Pos("
-             << pos.x << "," << pos.y << "," << pos.z << ") "
-             << "Battery=" << fixed << setprecision(1) 
-             << battery << "%" << endl;
+             << fixed << setprecision(2)
+             << pos.x << "," << pos.y << "," << pos.z
+             << ") Battery=" << battery << "%" << endl;
     }
 
     bool consumeBattery(double amount) {
@@ -56,14 +55,13 @@ public:
     double obstacleX[2] = {3.0, 6.0};
     double obstacleY[2] = {3.0, 1.5};
 
-    GroundRobot(string i, double x, double y, 
-        double z, double b)
+    GroundRobot(string i, double x, double y, double z, double b)
         : Vehicle(i, x, y, z, b) {}
 
     bool obstacleAhead(double range) {
         for (int i = 0; i < 2; i++) {
-            double dist = sqrt(pow(obstacleX[i] - pos.x, 2) + 
-                pow(obstacleY[i] - pos.y, 2));
+            double dist = sqrt(pow(obstacleX[i] - pos.x, 2) +
+                               pow(obstacleY[i] - pos.y, 2));
             if (dist <= range) return true;
         }
         return false;
@@ -71,9 +69,10 @@ public:
 
     void move(double dx, double dy, double dz) {
         double dist = sqrt(dx * dx + dy * dy);
+        cout << "> " << id << ": move(" << dx << "," << dy << "," << dz << ")\n";
         if (obstacleAhead(1.0)) {
-            cout << "[" << id << "] Ada rintangan di depan! "
-                     "Gerak dibatalkan.\n";
+            cout << "[" << id << "] Ada rintangan di depan! Gerak dibatalkan.\n";
+            status();
             return;
         }
 
@@ -82,7 +81,8 @@ public:
         pos.x += dx;
         pos.y += dy;
         cout << "[" << id << "] Bergerak ke (" 
-             << pos.x << "," << pos.y << ")\n";
+             << pos.x << "," << pos.y << "," << pos.z << ")\n";
+        status();
     }
 
     void move(double headingDeg, double distance) {
@@ -98,12 +98,12 @@ public:
 */
 class AerialDrone : public Vehicle {
 public:
-    AerialDrone(string i, double x, 
-        double y, double z, double b)
+    AerialDrone(string i, double x, double y, double z, double b)
         : Vehicle(i, x, y, z, b) {}
 
     void move(double dx, double dy, double dz) {
         double dist = sqrt(dx * dx + dy * dy + dz * dz);
+        cout << "> " << id << ": move(" << dx << "," << dy << "," << dz << ")\n";
         if (!consumeBattery(dist * 1.5)) return;
 
         pos.x += dx;
@@ -111,13 +111,12 @@ public:
         pos.z += dz;
 
         cout << "[" << id << "] Drone ke (" 
-             << pos.x << "," << pos.y 
-             
-             << "," << pos.z << ")\n";
+             << pos.x << "," << pos.y << "," << pos.z << ")\n";
+        status();
     }
 
-    // Overload: ke posisi target
     void move(Position target) {
+        cout << "> " << id << ": move(targetPosition)\n";
         double dx = target.x - pos.x;
         double dy = target.y - pos.y;
         double dz = target.z - pos.z;
@@ -126,7 +125,7 @@ public:
 };
 
 /**
- * Amphibious 
+ * Amphibious
 */
 class Amphibious : public Vehicle {
     bool airMode;
@@ -154,6 +153,8 @@ public:
             if (!consumeBattery(dist * 1.2)) return;
             pos.x += dx; pos.y += dy;
         }
+
+        status();
     }
 
     void status() {
@@ -180,29 +181,35 @@ int main() {
     cout << "--- Kondisi Awal ---\n";
     for (int i = 0; i < 3; i++) fleet[i]->status();
 
-    cout << "\n--- Simulasi Pergerakan ---\n";
+    cout << "\n Case 1: GroundRobot move(1.0,0.0,0.0)\n";
+    g1.move(1.0, 0.0, 0.0);
 
-    // Waypoint 1
-    cout << "\n> Waypoint 1 (2,1,0)\n";
-    g1.move(2, 1, 0);
-    d1.move(2, 1, -1);
-    a1.move(2, 3, 0);
+    cout << "\n2️Case 2: GroundRobot coba ke obstacle (jarak dekat)\n";
+    g1.move(2.0, 1.0, 0.0);
 
-    // Waypoint 2
-    cout << "\n> Waypoint 2 (5,3,2)\n";
-    g1.move(3, 2, 0);
-    d1.move(3, 2, 2);
-    a1.move(3, 2, 1);
+    cout << "\n Case 3: AerialDrone move(targetPosition)\n";
+    Vehicle::Position target = {5.0, 5.0, 10.0};
+    d1.move(target);
 
-    // Waypoint 3
-    cout << "\n> Waypoint 3 (8,0,0)\n";
-    g1.move(3, -3, 0);
-    d1.move(3, -3, -2);
-    a1.move(3, -3, 0);
+    cout << "\n Case 4: Fleet jalankan misi 3 Waypoints\n";
+    Vehicle::Position wp[3] = {
+        {2, 1, 0},
+        {5, 3, 2},
+        {8, 0, 0}
+    };
 
-    cout << "\n--- Kondisi Akhir ---\n";
+    for (int w = 0; w < 3; w++) {
+        cout << "\nWaypoint " << (w + 1)
+             << " (" << wp[w].x << "," << wp[w].y << "," << wp[w].z << ")\n";
+
+        g1.move(wp[w].x - g1.getPos().x, wp[w].y - g1.getPos().y, 0);
+        d1.move(wp[w].x - d1.getPos().x, wp[w].y - d1.getPos().y, wp[w].z - d1.getPos().z);
+        a1.move(wp[w].x - a1.getPos().x, wp[w].y - a1.getPos().y, wp[w].z - a1.getPos().z);
+    }
+
+    cout << "\n--- Kondisi Akhir Setelah Semua Case ---\n";
     for (int i = 0; i < 3; i++) fleet[i]->status();
 
-    cout << "\n=== Selesai ===\n";
+    cout << "\n===Semua Case Selesai Diuji===\n";
     return 0;
 }
