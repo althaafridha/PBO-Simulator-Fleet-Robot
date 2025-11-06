@@ -8,6 +8,16 @@ Proyek ini mensimulasikan beberapa jenis kendaraan robotik (GroundRobot, AerialD
 
 ---
 
+## Video Penjelasan Project  
+Penjelasan lengkap mengenai sistem, alur kode, dan fitur program dapat dilihat melalui tautan berikut:  
+[Google Drive - Video Penjelasan Project](https://drive.google.com/file/d/1Yd9g1BgufldSD9aXlR1ZyAMLNc0bjDJ8/view?usp=sharing)
+
+## File Project  
+kode program, file README, dan file scenario dapat dilihat melalui tautan berikut:  
+[Github - PBO_Study_Case_2](https://github.com/althaafridha/PBO-Simulator-Fleet-Robot)
+
+---
+
 ## Cara Kompilasi dan Menjalankan
 
 ### Kompilasi Program
