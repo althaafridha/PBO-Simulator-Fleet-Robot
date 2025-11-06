@@ -1,8 +1,8 @@
 # PBO Simulator Fleet Robot
 
-Simulasi Polimorfik Fleet Kendaraan Robotik  
-**Mata Kuliah:** Pemrograman Berorientasi Objek  
-**Repository:** https://github.com/althaafridha/PBO-Simulator-Fleet-Robot
+**Studi Kasus 2:** Simulator Fleet Robot Polymorfik  
+_Mata Kuliah: SIR201 - Pemrograman Berorientasi Objek RK - A2_   
+_Program Studi: Teknik Robotika dan Kecerdasan Buatan - Universitas Airlangga_
 
 Proyek ini mensimulasikan beberapa jenis kendaraan robotik (GroundRobot, AerialDrone, Amphibious) yang dapat bergerak dan berinteraksi menggunakan konsep *inheritance*, *overriding*, dan *polymorphism*.
 
