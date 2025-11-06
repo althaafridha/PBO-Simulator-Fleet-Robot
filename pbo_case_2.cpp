@@ -183,8 +183,8 @@ int main() {
 
     cout << "\n Case 1: GroundRobot move(1.0,0.0,0.0)\n";
     g1.move(1.0, 0.0, 0.0);
-
-    cout << "\n2️Case 2: GroundRobot coba ke obstacle (jarak dekat)\n";
+ 
+    cout << "\n Case 2: GroundRobot coba ke obstacle (jarak dekat)\n";
     g1.move(2.0, 1.0, 0.0);
 
     cout << "\n Case 3: AerialDrone move(targetPosition)\n";
