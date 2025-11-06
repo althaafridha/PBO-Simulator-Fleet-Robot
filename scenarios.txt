@@ -1,0 +1,101 @@
+=== Fleet Simulation Scenarios ===
+File: scenarios.txt
+Deskripsi: Daftar skenario uji gerakan kendaraan robotik beserta log keluaran yang diharapkan.
+
+------------------------------------------------------------
+[Case 1] GroundRobot move(1.0, 0.0, 0.0)
+------------------------------------------------------------
+Command:
+> GR1: move(1.0,0.0,0.0)
+
+Expected Log:
+[GR1] Bergerak ke (1.00,0.00,0.00)
+[GR1] Pos(1.00,0.00,0.00) Battery=49.20%
+
+Catatan:
+- Tidak ada rintangan dalam radius 1.0.
+- Konsumsi baterai = jarak(1.0) × 0.8 = 0.8%
+
+------------------------------------------------------------
+[Case 2] GroundRobot mendekati obstacle (2.0, 1.0, 0.0)
+------------------------------------------------------------
+Command:
+> GR1: move(2.0,1.0,0.0)
+
+Expected Log:
+[GR1] Ada rintangan di depan! Gerak dibatalkan.
+[GR1] Pos(1.00,0.00,0.00) Battery=49.20%
+
+Catatan:
+- Obstacle terdeteksi di posisi sekitar (3.0, 3.0) dan (6.0, 1.5)
+- Jarak ke obstacle dalam radius ≤ 1.0 → pergerakan dibatalkan.
+
+------------------------------------------------------------
+[Case 3] AerialDrone move(targetPosition)
+------------------------------------------------------------
+Command:
+> AD1: move(targetPosition)
+> AD1: move(5.0,5.0,5.0)
+
+Expected Log:
+[AD1] Drone ke (5.00,5.00,10.00)
+[AD1] Pos(5.00,5.00,10.00) Battery=57.67%
+
+Catatan:
+- Drone bergerak dari (0,0,5) ke (5,5,10)
+- Jarak = √(5² + 5² + 5²) = 8.66 → Konsumsi baterai = 8.66 × 1.5 = 12.99%
+
+------------------------------------------------------------
+[Case 4] Fleet Mission - 3 Waypoints
+------------------------------------------------------------
+Waypoints:
+    W1 = (2, 1, 0)
+    W2 = (5, 3, 2)
+    W3 = (8, 0, 0)
+
+=== Waypoint 1 ===
+Command Sequence:
+- GR1: move(dx, dy, 0)
+- AD1: move(dx, dy, dz)
+- AM1: move(dx, dy, dz)
+
+Expected Log (Ringkasan):
+[GR1] Bergerak ke (2.00,1.00,0.00)
+[AD1] Drone ke (2.00,1.00,0.00) Pos(2,1,0)
+[AM1] Mode darat aktif. Bergerak ke (2.00,1.00,0.00)
+
+=== Waypoint 2 ===
+Command Sequence:
+- GR1: move(3.0, 2.0, 0.0)
+- AD1: move(3.0, 2.0, 2.0)
+- AM1: move(3.0, 2.0, 2.0)
+
+Expected Log (Ringkasan):
+[GR1] Ada rintangan di depan! Gerak dibatalkan.
+[AD1] Drone ke (5.00,3.00,2.00)
+[AM1] Mode udara aktif. Pos(5.00,3.00,2.00)
+
+=== Waypoint 3 ===
+Command Sequence:
+- GR1: move(3.0, -3.0, 0.0)
+- AD1: move(3.0, -3.0, -2.0)
+- AM1: move(3.0, -3.0, -2.0)
+
+Expected Log (Ringkasan):
+[GR1] Bergerak ke (5.00,-2.00,0.00)
+[AD1] Drone ke (8.00,0.00,0.00)
+[AM1] Mode udara aktif. Pos(8.00,0.00,0.00)
+
+------------------------------------------------------------
+[Final Status Summary]
+------------------------------------------------------------
+Expected Output Akhir:
+[GR1] Pos(5.00,-2.00,0.00) Battery≈46%
+[AD1] Pos(8.00,0.00,0.00) Battery≈40%
+[AM1] Amphibious Pos(8.00,0.00,0.00) Mode=Air Battery≈70%
+
+------------------------------------------------------------
+Catatan Tambahan:
+- Semua hasil menggunakan setprecision(2).
+- Perhitungan konsumsi baterai bisa sedikit berbeda tergantung pembulatan.
+- Polymorfisme digunakan pada array Vehicle* fleet[3] untuk menjalankan misi bersama.
